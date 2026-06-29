@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Setup - White & Red Edition</title>
+    <title>KRATOS - White & Red Edition</title>
     <style>
         :root {
             --bg-color: #0a0b0d;
@@ -27,43 +27,103 @@
             color: var(--pc-white);
             line-height: 1.6;
             padding: 0 20px 40px 20px;
+            overflow-x: hidden;
         }
 
+        /* ANIMATION D'ENTRÉE : SÉLECTION DE LANGUE */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-color);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        #splash-screen.fade-out {
+            opacity: 0;
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+
+        .splash-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            text-align: center;
+            color: #fff;
+            min-height: 80px; /* Évite les sauts de ligne lors du changement de langue */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        .splash-title span {
+            color: var(--led-red);
+            margin-left: 10px;
+        }
+
+        .splash-langs {
+            display: flex;
+            gap: 25px;
+        }
+
+        .splash-btn {
+            background: var(--container-bg);
+            border: 2px solid var(--border-color);
+            padding: 15px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .splash-btn img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .splash-btn:hover {
+            border-color: var(--led-red);
+            box-shadow: 0 0 25px var(--led-red-glow);
+            transform: translateY(-8px) scale(1.05);
+        }
+
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+            100% { text-shadow: 0 0 20px var(--led-red-glow), 0 0 30px rgba(255, 51, 51, 0.6); }
+        }
+
+        /* CONTENU PRINCIPAL MASQUÉ AU DÉBUT */
         .wrapper {
             max-width: 1100px;
-            margin: 0 auto;
+            margin: 40px auto 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
         }
 
-        /* LANG SWITCHER */
-        .lang-switcher {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            padding: 20px 0 0 0;
-        }
-
-        .lang-btn {
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .lang-btn.active, .lang-btn:hover {
-            color: #fff;
-            border-color: var(--led-red);
-            box-shadow: 0 0 8px var(--led-red-glow);
+        .wrapper.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* HERO SECTION */
         .hero-section {
             display: flex;
-            flex-direction: column-reverse; /* Mobile-first */
+            flex-direction: column-reverse;
             align-items: center;
             text-align: center;
             padding: 30px 0;
@@ -73,8 +133,8 @@
         }
 
         .hero-text h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
+            font-size: 2.5rem;
+            font-weight: 900;
             color: #fff;
             text-transform: uppercase;
             letter-spacing: -1px;
@@ -90,7 +150,7 @@
         .hero-text p {
             color: var(--text-muted);
             font-size: 1.05rem;
-            max-width: 500px;
+            max-width: 550px;
             margin: 0 auto;
         }
 
@@ -112,7 +172,7 @@
         /* DASHBOARD SUMMARY */
         .dashboard-summary {
             display: grid;
-            grid-template-columns: 1fr; /* Mobile-first */
+            grid-template-columns: 1fr;
             gap: 15px;
             margin-bottom: 35px;
         }
@@ -175,7 +235,6 @@
             margin-bottom: 35px;
         }
 
-        /* Cache les tables sur mobile pour passer en mode cartes */
         table, thead, tbody, th, td, tr { display: block; }
         thead tr { position: absolute; top: -9999px; left: -9999px; }
         
@@ -268,13 +327,12 @@
                 min-height: 380px;
                 padding: 40px 0;
             }
-            .hero-text h1 { font-size: 2.8rem; }
+            .hero-text h1 { font-size: 3.2rem; }
             .hero-text p { margin: 0; font-size: 1.2rem; }
             .hero-image-container { justify-content: flex-end; width: auto; }
             .hero-image { max-height: 350px; }
             .dashboard-summary { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
             
-            /* Restauration du vrai comportement tableau sur grand écran */
             table { display: table; }
             thead { display: table-header-group; }
             thead tr { position: static; }
@@ -294,17 +352,26 @@
 </head>
 <body>
 
-<div class="wrapper">
-    
-    <div class="lang-switcher">
-        <button class="lang-btn active" onclick="switchLang('en')">EN</button>
-        <button class="lang-btn" onclick="switchLang('fr')">FR</button>
-        <button class="lang-btn" onclick="switchLang('it')">IT</button>
+<div id="splash-screen">
+    <div class="splash-title" id="main-splash-title">Select System Language</div>
+    <div class="splash-langs">
+        <button class="splash-btn" onclick="selectInitialLang('en')" onmouseenter="hoverLang('en')" onmouseleave="resetSplashTitle()">
+            <img src="https://unavatar.io/twemoji/gb.svg" alt="English">
+        </button>
+        <button class="splash-btn" onclick="selectInitialLang('fr')" onmouseenter="hoverLang('fr')" onmouseleave="resetSplashTitle()">
+            <img src="https://unavatar.io/twemoji/fr.svg" alt="Français">
+        </button>
+        <button class="splash-btn" onclick="selectInitialLang('it')" onmouseenter="hoverLang('it')" onmouseleave="resetSplashTitle()">
+            <img src="https://unavatar.io/twemoji/it.svg" alt="Italiano">
+        </button>
     </div>
+</div>
+
+<div class="wrapper">
 
     <section class="hero-section">
         <div class="hero-text">
-            <h1 id="hero-title">My Setup <br><span>White & Red</span></h1>
+            <h1 id="hero-title">KRATOS <br><span>White & Red</span></h1>
             <p id="hero-desc">Surgical inventory and real maximum pricing calculated as of June 29, 2026.</p>
         </div>
         <div class="hero-image-container">
@@ -336,7 +403,7 @@
             </tr>
         </thead>
         <tbody>
-            </tbody>
+        </tbody>
     </table>
 
     <table id="table-setup">
@@ -348,7 +415,7 @@
             </tr>
         </thead>
         <tbody>
-            </tbody>
+        </tbody>
     </table>
 
     <footer>
@@ -357,11 +424,16 @@
 </div>
 
 <script>
-    // BASE DE DONNÉES DES TRADUCTIONS
+    const titlesByLang = {
+        en: "Select System Language",
+        fr: "Sélectionnez la langue du système",
+        it: "Seleziona la lingua del sistema"
+    };
+
     const data = {
         en: {
-            heroTitle: "My Setup <br><span>White & Red</span>",
-            heroDesc: "Surgical inventory and real maximum pricing calculated as of June 29, 2026.",
+            heroTitle: "KRATOS <br><span>White & Red</span>",
+            heroDesc: "A ruthless, uncompromising setup built for absolute power and clinical execution.",
             cardPc: "Max Build PC",
             cardSetup: "Max Setup & Furniture",
             cardTotal: "Global Max Budget",
@@ -419,8 +491,8 @@
             ]
         },
         fr: {
-            heroTitle: "Mon Setup <br><span>White & Red</span>",
-            heroDesc: "Inventaire chirurgical et tarification maximale réelle calculée au 29 juin 2026.",
+            heroTitle: "KRATOS <br><span>White & Red</span>",
+            heroDesc: "Un setup impitoyable et sans compromis, forgé pour la puissance brute et l'exécution clinique.",
             cardPc: "Max Build PC",
             cardSetup: "Max Setup & Mobilier",
             cardTotal: "Budget Max Global",
@@ -478,8 +550,8 @@
             ]
         },
         it: {
-            heroTitle: "Il Mio Setup <br><span>White & Red</span>",
-            heroDesc: "Inventario chirurgico e prezzi massimi reali calcolati al 29 giugno 2026.",
+            heroTitle: "KRATOS <br><span>White & Red</span>",
+            heroDesc: "Un setup spietato e senza compromessi, forgiato per la potenza pura e l'esecuzione clinica.",
             cardPc: "Max Build PC",
             cardSetup: "Max Setup & Mobili",
             cardTotal: "Budget Max Globale",
@@ -538,12 +610,28 @@
         }
     };
 
-    function switchLang(lang) {
-        // MAJ boutons actifs
-        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+    // Gestion du survol des langues pour modifier le titre dynamiquement
+    function hoverLang(lang) {
+        document.getElementById('main-splash-title').innerText = titlesByLang[lang];
+    }
 
-        // Textes statiques
+    function resetSplashTitle() {
+        document.getElementById('main-splash-title').innerText = titlesByLang['en']; // Revenir à la langue par défaut (EN)
+    }
+
+    // Sélection initiale et animation de sortie
+    function selectInitialLang(lang) {
+        switchLang(lang);
+        
+        const splash = document.getElementById('splash-screen');
+        splash.classList.add('fade-out');
+        
+        document.querySelector('.wrapper').classList.add('visible');
+    }
+
+    // Injection des données traduites
+    function switchLang(lang) {
+        // Textes statiques du Hero & structure
         document.getElementById('hero-title').innerHTML = data[lang].heroTitle;
         document.getElementById('hero-desc').innerText = data[lang].heroDesc;
         document.querySelector('.lbl-pc-card').innerText = data[lang].cardPc;
@@ -557,7 +645,7 @@
         document.querySelectorAll('.th-src').forEach(el => el.innerText = data[lang].thSrc);
         document.querySelectorAll('.th-pr').forEach(el => el.innerText = data[lang].thPr);
 
-        // Injection lignes PC
+        // Lignes PC
         const pcBody = document.querySelector('#table-pc tbody');
         pcBody.innerHTML = "";
         let currentCat = "";
@@ -574,7 +662,7 @@
                 </tr>`;
         });
 
-        // Injection lignes SETUP
+        // Lignes SETUP
         const setupBody = document.querySelector('#table-setup tbody');
         setupBody.innerHTML = "";
         currentCat = "";
@@ -591,9 +679,6 @@
                 </tr>`;
         });
     }
-
-    // Init par défaut en Anglais
-    switchLang('en');
 </script>
 </body>
 </html>
