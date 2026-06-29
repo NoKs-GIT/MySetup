@@ -3,121 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KRATOS - White & Red Edition</title>
+    <title>KRATOS - White & Red Liquid Glass Edition</title>
     <style>
         :root {
-            --bg-color: #0a0b0d;
-            --container-bg: #12141c;
+            --bg-color: #060709;
+            --container-bg: rgba(14, 16, 22, 0.75); /* Base Liquid Glass optimisée */
+            --glass-specular: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.06);
             --pc-white: #f3f4f6;
-            --led-red: #ff3333;
-            --led-red-glow: rgba(255, 51, 51, 0.35);
+            --led-red: #ff2a2a;
+            --led-red-glow: rgba(255, 42, 42, 0.25);
+            --led-red-intense: rgba(255, 42, 42, 0.6);
             --text-muted: #9ca3af;
-            --border-color: #242936;
+            --sidebar-width: 240px;
+            --sidebar-collapsed-width: 70px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
         }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--pc-white);
-            line-height: 1.6;
-            padding: 0 20px 40px 20px;
+            min-height: 100vh;
+            display: flex;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* ANIMATION D'ENTRÉE : SÉLECTION DE LANGUE */
+        /* AMBIANCE NEON BACKDROP ANIMÉE */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%;
+            left: 70%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 42, 42, 0.08) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseGlow 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.8; }
+            100% { transform: scale(1.2) translate(-30px, 20px); opacity: 1; }
+        }
+
+        /* EFFECT BOOT SEQUENCE */
+        .boot-loading main, 
+        .boot-loading aside {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        /* LANDING SPLASH SCREEN */
         #splash-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-color: var(--bg-color);
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: radial-gradient(circle at center, #11131a 0%, #060709 100%);
             z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            opacity: 1;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         #splash-screen.fade-out {
             opacity: 0;
-            transform: scale(1.05);
+            transform: scale(1.05) translateY(-30px);
             pointer-events: none;
         }
 
-        .splash-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 40px;
-            text-align: center;
-            color: #fff;
-            min-height: 80px; /* Évite les sauts de ligne lors du changement de langue */
+        .splash-title-wrapper {
+            min-height: 90px;
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: pulseGlow 2s infinite alternate;
+            margin-bottom: 40px;
         }
 
-        .splash-title span {
-            color: var(--led-red);
-            margin-left: 10px;
+        .splash-title {
+            font-size: 2.4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .text-changing {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            filter: blur(4px);
         }
 
         .splash-langs {
             display: flex;
             gap: 25px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 25px 40px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 1px var(--glass-specular);
         }
 
         .splash-btn {
-            background: var(--container-bg);
-            border: 2px solid var(--border-color);
-            padding: 15px;
-            border-radius: 14px;
+            background: rgba(22, 25, 35, 0.6);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 18px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 1px 0px rgba(255,255,255,0.05);
+        }
+
+        .splash-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -60%; width: 30%; height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.13), transparent);
+            transform: rotate(35deg);
+        }
+
+        .splash-btn:hover::after {
+            left: 140%;
+            transition: left 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .splash-btn img {
+            width: 60px; height: 60px;
+            object-fit: contain;
+            filter: grayscale(15%) drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+        }
+
+        .splash-btn:hover {
+            border-color: var(--led-red);
+            box-shadow: 0 0 35px var(--led-red-glow), inset 0 1px 10px rgba(255, 42, 42, 0.2);
+            transform: translateY(-6px) scale(1.04);
+            background: rgba(28, 32, 45, 0.8);
+        }
+
+        .splash-btn:hover img {
+            filter: grayscale(0%) drop-shadow(0 6px 12px rgba(255, 42, 42, 0.3));
+            transform: scale(1.08);
+        }
+
+        /* SIDEBAR MINIMALISTE ET RÉTRACTABLE */
+        aside {
+            width: var(--sidebar-width);
+            background: rgba(10, 11, 15, 0.9);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 15px;
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            z-index: 100;
+            opacity: 1;
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        body.sidebar-collapsed aside {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .brand-logo {
+            width: 32px; height: 32px;
+            background: var(--led-red);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 0 15px var(--led-red-glow);
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+        }
+
+        body.sidebar-collapsed .brand-name,
+        body.sidebar-collapsed .nav-text {
+            display: none;
+        }
+
+        nav {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .nav-item svg {
+            width: 20px; height: 20px;
+            flex-shrink: 0;
+            fill: currentColor;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--led-red);
+            background: rgba(255, 42, 42, 0.04);
+            color: var(--led-red);
+        }
+
+        .toggle-sidebar-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .splash-btn img {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
+        .toggle-sidebar-btn:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,0.2);
         }
 
-        .splash-btn:hover {
-            border-color: var(--led-red);
-            box-shadow: 0 0 25px var(--led-red-glow);
-            transform: translateY(-8px) scale(1.05);
-        }
-
-        @keyframes pulseGlow {
-            0% { text-shadow: 0 0 10px rgba(255,255,255,0.1); }
-            100% { text-shadow: 0 0 20px var(--led-red-glow), 0 0 30px rgba(255, 51, 51, 0.6); }
-        }
-
-        /* CONTENU PRINCIPAL MASQUÉ AU DÉBUT */
-        .wrapper {
-            max-width: 1100px;
-            margin: 40px auto 0 auto;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
-        }
-
-        .wrapper.visible {
+        /* CONTENT CONTAINER GLOBAL */
+        main {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            padding: 40px 40px 60px 40px;
+            max-width: 1600px;
+            width: calc(100% - var(--sidebar-width));
             opacity: 1;
-            transform: translateY(0);
+            transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        body.sidebar-collapsed main {
+            margin-left: var(--sidebar-collapsed-width);
+            width: calc(100% - var(--sidebar-collapsed-width));
+        }
+
+        /* HEADER & BARRE DE RECHERCHE TRIGGER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .search-trigger {
+            background: rgba(18, 20, 28, 0.65);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .search-trigger kbd {
+            background: rgba(255,255,255,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
         }
 
         /* HERO SECTION */
@@ -126,14 +326,14 @@
             flex-direction: column-reverse;
             align-items: center;
             text-align: center;
-            padding: 30px 0;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 30px;
+            padding: 20px 0 40px 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 40px;
             gap: 20px;
         }
 
         .hero-text h1 {
-            font-size: 2.5rem;
+            font-size: 2.6rem;
             font-weight: 900;
             color: #fff;
             text-transform: uppercase;
@@ -144,12 +344,12 @@
 
         .hero-text h1 span {
             color: var(--led-red);
-            text-shadow: 0 0 15px var(--led-red-glow);
+            text-shadow: 0 0 20px var(--led-red-glow);
         }
 
         .hero-text p {
             color: var(--text-muted);
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             max-width: 550px;
             margin: 0 auto;
         }
@@ -158,227 +358,334 @@
             width: 100%;
             display: flex;
             justify-content: center;
+            perspective: 1000px;
         }
 
         .hero-image {
             max-width: 100%;
-            max-height: 280px;
+            max-height: 250px;
             object-fit: contain;
             mix-blend-mode: lighten; 
-            opacity: 0.9;
-            filter: drop-shadow(0 0 20px rgba(255, 51, 51, 0.2));
+            opacity: 0.85;
+            filter: drop-shadow(0 10px 25px rgba(255, 42, 42, 0.15));
+            transition: transform 0.5s ease, filter 0.5s ease;
         }
 
-        /* DASHBOARD SUMMARY */
+        .hero-image:hover {
+            transform: scale(1.03) rotateY(-5px);
+            filter: drop-shadow(0 15px 35px rgba(255, 42, 42, 0.3));
+        }
+
+        /* KANBAN / GRILLE DES BLOCS DE RÉSUMÉ */
         .dashboard-summary {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 35px;
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
         .summary-card {
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
+            background: var(--container-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 25px;
             text-align: center;
             position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25), inset 0 1px 1px var(--glass-specular);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+            overflow: hidden;
+        }
+
+        .summary-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -150%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s ease;
+        }
+
+        .summary-card:hover::after { left: 150%; }
+        .summary-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
         }
 
         .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
         }
-
-        .summary-card.pc-card::before { background-color: #fff; }
+        .summary-card.pc-card::before { background-color: rgba(255,255,255,0.4); }
         .summary-card.setup-card::before { background-color: var(--led-red); }
-        .summary-card.total-card::before { background: linear-gradient(90deg, #fff, var(--led-red)); }
-        
         .summary-card.total-card {
-            border-color: rgba(255, 51, 51, 0.4);
-            box-shadow: 0 0 15px var(--led-red-glow);
+            border-color: rgba(255, 42, 42, 0.25);
+            box-shadow: 0 0 20px rgba(255, 42, 42, 0.1), 0 10px 30px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255, 42, 42, 0.1);
+        }
+        .summary-card.total-card::before { background: linear-gradient(90deg, #fff, var(--led-red)); }
+        .summary-card.total-card:hover {
+            border-color: var(--led-red);
+            box-shadow: 0 0 30px var(--led-red-glow), 0 15px 35px rgba(0,0,0,0.35);
         }
 
         .summary-card h3 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 10px;
         }
-
         .summary-card .price {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #fff;
+            font-size: 2.2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px;
         }
-
         .summary-card.total-card .price {
-            color: var(--led-red);
-            text-shadow: 0 0 10px var(--led-red-glow);
+            color: var(--led-red); text-shadow: 0 0 15px var(--led-red-glow);
         }
 
-        /* TABLES & MOBILE CARDS */
+        /* SECONDE GRILLE ULTRA LARGE ADAPTATIVE (32" 4K PROOF) */
+        .tables-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        /* TABLES DESIGN DESIGN GRAPHIC */
         table {
             width: 100%;
             border-collapse: collapse;
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            background: var(--container-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
             overflow: hidden;
-            margin-bottom: 35px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25), inset 0 1px 1px var(--glass-specular);
         }
 
         table, thead, tbody, th, td, tr { display: block; }
         thead tr { position: absolute; top: -9999px; left: -9999px; }
         
         tr { 
-            border: 1px solid var(--border-color); 
-            margin-bottom: 15px; 
-            border-radius: 10px; 
-            padding: 12px; 
-            background-color: var(--container-bg);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px; 
+            background: transparent;
         }
+        tr:last-child { border-bottom: none; }
 
         td { 
-            border: none; 
-            padding: 6px 10px; 
-            text-align: right; 
-            position: relative; 
-            font-size: 0.95rem;
+            border: none; padding: 8px 10px; text-align: right; position: relative; font-size: 0.95rem;
         }
 
         td::before { 
-            content: attr(data-label); 
-            position: absolute; 
-            left: 10px; 
-            font-weight: bold; 
-            color: var(--text-muted); 
+            content: attr(data-label); position: absolute; left: 10px; 
+            font-weight: 700; color: var(--text-muted); text-transform: uppercase;
+            font-size: 0.75rem; letter-spacing: 0.5px;
         }
 
         .category-row { 
             text-align: center; 
-            background-color: rgba(255, 255, 255, 0.04) !important; 
-            border-bottom: 2px solid var(--led-red) !important;
-            font-weight: bold;
-            color: #fff;
-            letter-spacing: 1px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            padding: 10px !important;
+            background: rgba(255, 42, 42, 0.04) !important; 
+            border-bottom: 1px solid rgba(255, 42, 42, 0.3) !important;
+            font-weight: 800; color: #fff; letter-spacing: 1.5px; font-size: 0.85rem;
+            text-transform: uppercase; padding: 12px !important;
         }
-        .category-row td { text-align: center; width: 100%; }
+        .category-row td { text-align: center; width: 100%; padding: 0; }
         .category-row td::before { content: ""; }
 
         td.item-spec {
-            color: #ffffff;
-            font-weight: 500;
-            text-align: left;
-            padding-top: 10px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: block;
-            width: 100%;
+            color: #ffffff; font-weight: 500; text-align: left; padding-top: 5px;
+            margin-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: block; width: 100%;
         }
-        td.item-spec::before { content: ""; position: static; }
+        td.item-spec::before { content: ""; }
 
         .source-tag {
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 3px 8px;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.04);
+            padding: 4px 10px; border-radius: 8px; color: rgba(255,255,255,0.9);
+            font-size: 0.8rem; font-weight: 600; border: 1px solid var(--glass-border);
         }
 
         .source-tag.excl {
-            color: var(--led-red);
-            border-color: rgba(255, 51, 51, 0.3);
-            background-color: rgba(255, 51, 51, 0.05);
+            color: var(--led-red); border-color: rgba(255, 42, 42, 0.3);
+            background-color: rgba(255, 42, 42, 0.08); text-shadow: 0 0 10px var(--led-red-glow);
         }
 
         td.item-price {
-            font-weight: 700;
-            color: var(--led-red);
-            font-size: 1.1rem;
+            font-weight: 700; color: var(--led-red); font-size: 1.1rem;
+            text-shadow: 0 0 10px var(--led-red-glow);
+        }
+
+        /* INTERFACE COMMAND MENU (CTRL + K) */
+        .cmd-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(4, 5, 7, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 15vh;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .cmd-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cmd-box {
+            background: #0f111a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%; max-width: 600px; border-radius: 16px;
+            box-shadow: 0 24px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255,42,42,0.05);
+            transform: scale(0.97);
+            transition: transform 0.2s ease;
+            overflow: hidden;
+        }
+
+        .cmd-overlay.open .cmd-box { transform: scale(1); }
+        .cmd-input-wrapper { position: relative; border-bottom: 1px solid var(--glass-border); }
+        
+        .cmd-input {
+            width: 100%; background: transparent; border: none; padding: 18px 24px;
+            color: #fff; font-size: 1.1rem; outline: none;
+        }
+
+        .cmd-results { max-height: 300px; overflow-y: auto; padding: 10px; }
+        
+        .cmd-item {
+            padding: 12px 16px; border-radius: 10px; cursor: pointer;
+            display: flex; justify-content: space-between; color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+        }
+
+        .cmd-item:hover, .cmd-item.selected {
+            background: rgba(255, 42, 42, 0.1); color: #fff;
+            border-left: 3px solid var(--led-red);
+        }
+
+        .cmd-hint {
+            padding: 10px 20px; background: #0a0b10; font-size: 0.75rem;
+            color: var(--text-muted); text-align: right; border-top: 1px solid var(--glass-border);
         }
 
         footer {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 25px;
-            margin-top: 40px;
+            text-align: center; color: var(--text-muted); font-size: 0.8rem;
+            border-top: 1px solid var(--glass-border); padding-top: 30px; margin-top: 50px;
         }
 
-        /* MEDIA QUERIES : DESKTOP RESTORATION */
+        /* MEDIA QUERIES : ADAPTATION GRAND ÉCRAN & DESKTOP (32" 4K READY) */
         @media (min-width: 820px) {
-            .hero-section {
-                flex-direction: row;
-                text-align: left;
-                min-height: 380px;
-                padding: 40px 0;
-            }
-            .hero-text h1 { font-size: 3.2rem; }
+            .hero-section { flex-direction: row; text-align: left; min-height: 280px; padding: 20px 0; }
+            .hero-text h1 { font-size: 3.5rem; }
             .hero-text p { margin: 0; font-size: 1.2rem; }
             .hero-image-container { justify-content: flex-end; width: auto; }
-            .hero-image { max-height: 350px; }
-            .dashboard-summary { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+            .hero-image { max-height: 260px; }
+            .dashboard-summary { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
             
             table { display: table; }
             thead { display: table-header-group; }
             thead tr { position: static; }
             tbody { display: table-row-group; }
-            tr { display: table-row; border: none; background: none; border-bottom: 1px solid var(--border-color); }
-            tr:last-child { border-bottom: none; }
-            th, td { display: table-cell; padding: 14px 20px; text-align: left; }
-            th { background-color: rgba(255, 255, 255, 0.02); color: var(--text-muted); font-size: 0.8rem; border-bottom: 2px solid var(--border-color); }
+            tr { display: table-row; border: none; background: none; border-bottom: 1px solid var(--glass-border); }
+            th, td { display: table-cell; padding: 16px 24px; text-align: left; }
+            th { background-color: rgba(255, 255, 255, 0.01); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--glass-border); }
             td::before { display: none; }
-            td.item-spec { display: table-cell; border-bottom: none; padding-top: 14px; margin-bottom: 0; width: auto; }
+            td.item-spec { display: table-cell; border-bottom: none; padding-top: 16px; margin-bottom: 0; width: auto; }
             td.item-price { text-align: right; }
-            .category-row { border-left: 3px solid var(--led-red); border-bottom: none !important; }
-            .category-row td { text-align: left; }
-            tr:hover:not(.category-row) { background-color: rgba(255, 255, 255, 0.01); }
+            .category-row { border-left: 4px solid var(--led-red); border-bottom: none !important; }
+            .category-row td { text-align: left; padding: 16px 24px !important; }
+            tr:hover:not(.category-row) { background-color: rgba(255, 255, 255, 0.02); }
+        }
+
+        /* RE-LAYOUT INTELLIGENT POUR ÉCRANS ULTRA-LARGES (Ton 32" principal) */
+        @media (min-width: 1400px) {
+            .tables-container {
+                grid-template-columns: 1fr 1fr; /* Les deux gros tableaux se mettent côte à côte sans scroller */
+            }
+        }
+
+        /* RESPONSIVE MOBILE SANS SOUCI */
+        @media (max-width: 768px) {
+            aside { width: 0; padding: 0; overflow: hidden; border: none; }
+            body.sidebar-collapsed aside { width: 0; }
+            main { margin-left: 0 !important; width: 100% !important; padding: 20px; }
+            header { flex-direction: column; gap: 20px; align-items: flex-start; }
+            .search-trigger { width: 100%; justify-content: space-between; }
         }
     </style>
 </head>
-<body>
+<body class="boot-loading">
 
+<!-- SPLASH SCREEN MULTILINGUE D'ORIGINE -->
 <div id="splash-screen">
-    <div class="splash-title" id="main-splash-title">Select System Language</div>
+    <div class="splash-title-wrapper">
+        <div class="splash-title" id="main-splash-title">Select System Language</div>
+    </div>
     <div class="splash-langs">
         <button class="splash-btn" onclick="selectInitialLang('en')" onmouseenter="hoverLang('en')" onmouseleave="resetSplashTitle()">
-            <img src="https://unavatar.io/twemoji/gb.svg" alt="English">
+            <img src="https://openmoji.org/data/color/svg/1F1EC-1F1E7.svg" alt="English">
         </button>
         <button class="splash-btn" onclick="selectInitialLang('fr')" onmouseenter="hoverLang('fr')" onmouseleave="resetSplashTitle()">
-            <img src="https://unavatar.io/twemoji/fr.svg" alt="Français">
+            <img src="https://openmoji.org/data/color/svg/1F1EB-1F1F7.svg" alt="Français">
         </button>
         <button class="splash-btn" onclick="selectInitialLang('it')" onmouseenter="hoverLang('it')" onmouseleave="resetSplashTitle()">
-            <img src="https://unavatar.io/twemoji/it.svg" alt="Italiano">
+            <img src="https://openmoji.org/data/color/svg/1F1EE-1F1F9.svg" alt="Italiano">
         </button>
     </div>
 </div>
 
-<div class="wrapper">
+<!-- NOUVELLE SIDEBAR NAVIGATION AVEC TOGGLE -->
+<aside id="sidebar">
+    <div>
+        <div class="brand">
+            <div class="brand-logo">K</div>
+            <span class="brand-name">KRATOS APP</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item active">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="nav-text">Command Center</span>
+            </a>
+            <a href="#table-pc" class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                <span class="nav-text">Build PC</span>
+            </a>
+            <a href="#table-setup" class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/></svg>
+                <span class="nav-text">Setup & Mobilier</span>
+            </a>
+        </nav>
+    </div>
+    <button class="toggle-sidebar-btn" id="toggleSidebar" title="Collapse Menu">
+        <svg style="width:16px;height:16px;" viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/></svg>
+    </button>
+</aside>
+
+<!-- MAIN APP HUB -->
+<main>
+    <header>
+        <div class="page-title">
+            <h1 style="font-size: 1.6rem; font-weight:800; letter-spacing:-0.5px;">SYSTEM DASHBOARD</h1>
+        </div>
+        <div class="search-trigger" id="searchTrigger">
+            <span>Recherche rapide...</span>
+            <kbd>Ctrl K</kbd>
+        </div>
+    </header>
 
     <section class="hero-section">
         <div class="hero-text">
             <h1 id="hero-title">KRATOS <br><span>White & Red</span></h1>
-            <p id="hero-desc">Surgical inventory and real maximum pricing calculated as of June 29, 2026.</p>
+            <p id="hero-desc">...</p>
         </div>
         <div class="hero-image-container">
             <img class="hero-image" src="image_b069e1.jpg" alt="NZXT H9 Flow White & Red Build">
         </div>
     </section>
 
+    <!-- CARDS SUMMARY -->
     <div class="dashboard-summary">
         <div class="summary-card pc-card">
             <h3 class="lbl-pc-card">Max Build PC</h3>
@@ -394,36 +701,54 @@
         </div>
     </div>
 
-    <table id="table-pc">
-        <thead>
-            <tr>
-                <th class="th-comp">Component (Exact Spec)</th>
-                <th class="th-src">Main Source</th>
-                <th style="text-align: right;" class="th-pr">Max Price</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+    <!-- WRAPPER DE GRILLE POUR ULTRA-LARGE (Côte-à-côte si > 1400px) -->
+    <div class="tables-container">
+        <table id="table-pc">
+            <thead>
+                <tr>
+                    <th class="th-comp">Component (Exact Spec)</th>
+                    <th class="th-src">Main Source</th>
+                    <th style="text-align: right;" class="th-pr">Max Price</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
 
-    <table id="table-setup">
-        <thead>
-            <tr>
-                <th class="th-item">Peripheral / Setup Element</th>
-                <th class="th-src">Main Source</th>
-                <th style="text-align: right;" class="th-pr">Max Price</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+        <table id="table-setup">
+            <thead>
+                <tr>
+                    <th class="th-item">Peripheral / Setup Element</th>
+                    <th class="th-src">Main Source</th>
+                    <th style="text-align: right;" class="th-pr">Max Price</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
     <footer>
         <p id="footer-text">Design synchronized to the machine's color scheme — 2026</p>
     </footer>
+</main>
+
+<!-- CONSOLE COMMAND MENU (CTRL + K) -->
+<div class="cmd-overlay" id="cmdMenu">
+    <div class="cmd-box">
+        <div class="cmd-input-wrapper">
+            <input type="text" class="cmd-input" id="cmdInput" placeholder="Tapez pour filtrer ou naviguer..." autocomplete="off">
+        </div>
+        <div class="cmd-results" id="cmdResults"></div>
+        <div class="cmd-hint">
+            <span>Navigue avec <kbd>↑</kbd> <kbd>↓</kbd>, valide avec <kbd>Entrée</kbd>, quitte avec <kbd>Échap</kbd></span>
+        </div>
+    </div>
 </div>
 
 <script>
+    if (typeof globalThis.ns_setupCallback !== 'function') {
+        globalThis.ns_setupCallback = function() {};
+    }
+
     const titlesByLang = {
         en: "Select System Language",
         fr: "Sélectionnez la langue du système",
@@ -434,28 +759,10 @@
         en: {
             heroTitle: "KRATOS <br><span>White & Red</span>",
             heroDesc: "A ruthless, uncompromising setup built for absolute power and clinical execution.",
-            cardPc: "Max Build PC",
-            cardSetup: "Max Setup & Furniture",
-            cardTotal: "Global Max Budget",
-            thComp: "Component (Exact Spec)",
-            thItem: "Peripheral / Setup Element",
-            thSrc: "Main Source",
-            thPr: "Max Price",
-            thLabelSrc: "Source",
-            thLabelPr: "Price",
-            footer: "Design synchronized to the machine's color scheme — 2026",
-            categories: {
-                c1: "Structure & Power Supply (PC)",
-                c2: "Processor & Motherboard",
-                c3: "Graphics & Memories",
-                c4: "Cooling & Ventilation",
-                c5: "Operating System",
-                c6: "Display & Screens",
-                c7: "Input Devices & Controls",
-                c8: "Audio & Sound",
-                c9: "Network & Power Accessories",
-                c10: "Secretlab Furniture & MAGNUS Ecosystem"
-            },
+            cardPc: "Max Build PC", cardSetup: "Max Setup & Furniture", cardTotal: "Global Max Budget",
+            thComp: "Component (Exact Spec)", thItem: "Peripheral / Setup Element", thSrc: "Main Source", thPr: "Max Price",
+            thLabelSrc: "Source", thLabelPr: "Price", footer: "Design synchronized to the machine's color scheme — 2026",
+            categories: { c1: "Structure & Power Supply (PC)", c2: "Processor & Motherboard", c3: "Graphics & Memories", c4: "Cooling & Ventilation", c5: "Operating System", c6: "Display & Screens", c7: "Input Devices & Controls", c8: "Audio & Sound", c9: "Network & Power Accessories", c10: "Secretlab Furniture & MAGNUS Ecosystem" },
             pcItems: [
                 { cat: "c1", spec: "Case: NZXT H9 Flow ATX Mid Tower (White)", src: "Amazon", excl: false, price: "165 €" },
                 { cat: "c1", spec: "Power Supply: MSI MAG A850GL PCIE5 (850W - 80+ Gold - Full Modular - White)", src: "Amazon", excl: false, price: "140 €" },
@@ -493,28 +800,10 @@
         fr: {
             heroTitle: "KRATOS <br><span>White & Red</span>",
             heroDesc: "Un setup impitoyable et sans compromis, forgé pour la puissance brute et l'exécution clinique.",
-            cardPc: "Max Build PC",
-            cardSetup: "Max Setup & Mobilier",
-            cardTotal: "Budget Max Global",
-            thComp: "Composant (Spécification Exacte)",
-            thItem: "Périphérique / Élément Setup",
-            thSrc: "Source Principale",
-            thPr: "Prix Max",
-            thLabelSrc: "Source",
-            thLabelPr: "Prix",
-            footer: "Design synchronisé sur le code couleur de la machine — 2026",
-            categories: {
-                c1: "Structure & Alimentation (PC)",
-                c2: "Processeur & Carte Mère",
-                c3: "Graphismes & Mémoires",
-                c4: "Refroidissement & Ventilation",
-                c5: "Système d'exploitation",
-                c6: "Affichage & Écrans",
-                c7: "Périphériques de Saisie & Contrôles",
-                c8: "Audio & Son",
-                c9: "Accessoires Réseau & Énergie",
-                c10: "Mobilier Secretlab & Écosystème MAGNUS"
-            },
+            cardPc: "Max Build PC", cardSetup: "Max Setup & Mobilier", cardTotal: "Budget Max Global",
+            thComp: "Composant (Spécification Exacte)", thItem: "Périphérique / Élément Setup", thSrc: "Source Principale", thPr: "Prix Max",
+            thLabelSrc: "Source", thLabelPr: "Prix", footer: "Design synchronisé sur le code couleur de la machine — 2026",
+            categories: { c1: "Structure & Alimentation (PC)", c2: "Processeur & Carte Mère", c3: "Graphismes & Mémoires", c4: "Refroidissement & Ventilation", c5: "Système d'exploitation", c6: "Affichage & Écrans", c7: "Périphériques de Saisie & Contrôles", c8: "Audio & Son", c9: "Accessoires Réseau & Énergie", c10: "Mobilier Secretlab & Écosystème MAGNUS" },
             pcItems: [
                 { cat: "c1", spec: "Boîtier : NZXT H9 Flow ATX Mid Tower (Blanc)", src: "Amazon", excl: false, price: "165 €" },
                 { cat: "c1", spec: "Alimentation : MSI MAG A850GL PCIE5 (850W - 80+ Gold - Full Modular - Blanc)", src: "Amazon", excl: false, price: "140 €" },
@@ -551,29 +840,11 @@
         },
         it: {
             heroTitle: "KRATOS <br><span>White & Red</span>",
-            heroDesc: "Un setup spietato e senza compromessi, forgiato per la potenza pura e l'esecuzione clinica.",
-            cardPc: "Max Build PC",
-            cardSetup: "Max Setup & Mobili",
-            cardTotal: "Budget Max Globale",
-            thComp: "Componente (Spec Sghembe)",
-            thItem: "Periferica / Elemento Setup",
-            thSrc: "Fonte Principale",
-            thPr: "Prezzo Massimo",
-            thLabelSrc: "Fonte",
-            thLabelPr: "Prezzo",
-            footer: "Design sincronizzato con la combinazione di colori del PC — 2026",
-            categories: {
-                c1: "Struttura & Alimentazione (PC)",
-                c2: "Processore & Scheda Madre",
-                c3: "Grafica & Memoria",
-                c4: "Raffreddamento & Ventilazione",
-                c5: "Sistema Operativo",
-                c6: "Display & Schermi",
-                c7: "Dispositivi di Input & Controlli",
-                c8: "Audio & Suono",
-                c9: "Accessori di Rete & Energia",
-                c10: "Mobili Secretlab & Ecosistema MAGNUS"
-            },
+            heroDesc: "Un setup spietato e senza compromessi, forgiato per la potenza pura e l'esecuzione tecnica.",
+            cardPc: "Max Build PC", cardSetup: "Max Setup & Mobili", cardTotal: "Budget Max Globale",
+            thComp: "Componente (Spec Esatte)", thItem: "Periferica / Elemento Setup", thSrc: "Fonte Principale", thPr: "Prezzo Massimo",
+            thLabelSrc: "Fonte", thLabelPr: "Prezzo", footer: "Design sincronizzato con la combinazione di colori del PC — 2026",
+            categories: { c1: "Struttura & Alimentazione (PC)", c2: "Processore & Scheda Madre", c3: "Grafica & Memoria", c4: "Raffreddamento & Ventilazione", c5: "Sistema Operativo", c6: "Display & Schermi", c7: "Dispositivi di Input & Controlli", c8: "Audio & Suono", c9: "Accessori di Rete & Energia", c10: "Mobili Secretlab & Ecosistema MAGNUS" },
             pcItems: [
                 { cat: "c1", spec: "Case: NZXT H9 Flow ATX Mid Tower (Bianco)", src: "Amazon", excl: false, price: "165 €" },
                 { cat: "c1", spec: "Alimentatore: MSI MAG A850GL PCIE5 (850W - 80+ Gold - Full Modular - Bianco)", src: "Amazon", excl: false, price: "140 €" },
@@ -597,88 +868,192 @@
                 { cat: "c7", spec: "Volante Simracing: Logitech G923 (Versione Xbox/PC)", src: "Amazon", excl: false, price: "320 €" },
                 { cat: "c8", spec: "Cuffie Audio: Beyerdynamic DT 770 PRO (Black Limited Edition)", src: "Amazon", excl: false, price: "160 €" },
                 { cat: "c8", spec: "Microfono: TONOR TD510 (Dinamico XLR/USB + braccio articolato originale)", src: "Amazon", excl: false, price: "60 €" },
-                { cat: "c9", spec: "Rete: Cavo Ethernet RJ45 Categoria 8 (Schermato - Nylon intrecciato - 10-40 Gb/s)", src: "Amazon", excl: false, price: "20 €" },
-                { cat: "c9", spec: "Energia: Presa multipla con protezione da sovratensioni (5-6 prese con interruttore ON/OFF)", src: "Amazon", excl: false, price: "25 €" },
-                { cat: "c10", spec: "Scrivania: Secretlab MAGNUS Pro XL (Scrivania in metallo regolabile in altezza)", src: "Secretlab", excl: true, price: "1 070 €" },
+                { cat: "c9", spec: "Rete: Cavo Ethernet RJ45 Cat 8 (Schermato - Intrecciato in nylon - 10-40 Gb/s)", src: "Amazon", excl: false, price: "20 €" },
+                { cat: "c9", spec: "Energia: Multipresa con protezione da sovratensioni (5-6 prese con interruttore ON/OFF remoto)", src: "Amazon", excl: false, price: "25 €" },
+                { cat: "c10", spec: "Scrivania: Secretlab MAGNUS Pro XL (Scrivania in metallo regolabile in altezza premium)", src: "Secretlab", excl: true, price: "1 070 €" },
                 { cat: "c10", spec: "Illuminazione: Secretlab MAGRGB Diffused LED Strip (Smart Lighting by Nanoleaf)", src: "Secretlab", excl: true, price: "80 €" },
-                { cat: "c10", spec: "Supporto Monitor: Secretlab MAGNUS Dual Monitor Arm (Braccio doppio)", src: "Secretlab", excl: true, price: "325 €" },
-                { cat: "c10", spec: "Gestione Cavi: Pacchetto di ancoraggi magnetici Secretlab", src: "Secretlab", excl: true, price: "50 €" },
-                { cat: "c10", spec: "Porta Cuffie: Supporto magnetico per cuffie Secretlab Mount", src: "Secretlab", excl: true, price: "30 €" },
+                { cat: "c10", spec: "Supporti Monitor: Secretlab MAGNUS Dual Monitor Arm", src: "Secretlab", excl: true, price: "325 €" },
+                { cat: "c10", spec: "Gestione Cavi: Secretlab Magnetic Anchors Pack", src: "Secretlab", excl: true, price: "50 €" },
+                { cat: "c10", spec: "Porta Cuffie: Secretlab Magnetic Headphone Mount", src: "Secretlab", excl: true, price: "30 €" },
                 { cat: "c10", spec: "Sedia: Secretlab TITAN Evo (Taglia R)", src: "Secretlab", excl: true, price: "595 €" },
-                { cat: "c10", spec: "Comfort Seduta: Cuscino lombare Secretlab Pro (Memory Foam)", src: "Secretlab", excl: true, price: "80 €" }
+                { cat: "c10", spec: "Comfort Seduta: Secretlab Pro Lumbar Cushion (Memory Foam)", src: "Secretlab", excl: true, price: "80 €" }
             ]
         }
     };
 
-    // Gestion du survol des langues pour modifier le titre dynamiquement
+    let currentLang = 'en';
+
+    // ANCIENNES FONCTIONS SPLASH PRÉSERVÉES
     function hoverLang(lang) {
-        document.getElementById('main-splash-title').innerText = titlesByLang[lang];
+        const titleEl = document.getElementById('main-splash-title');
+        titleEl.classList.add('text-changing');
+        setTimeout(() => {
+            titleEl.textContent = titlesByLang[lang];
+            titleEl.classList.remove('text-changing');
+        }, 150);
     }
 
     function resetSplashTitle() {
-        document.getElementById('main-splash-title').innerText = titlesByLang['en']; // Revenir à la langue par défaut (EN)
+        const titleEl = document.getElementById('main-splash-title');
+        titleEl.classList.add('text-changing');
+        setTimeout(() => {
+            titleEl.textContent = titlesByLang[currentLang];
+            titleEl.classList.remove('text-changing');
+        }, 150);
     }
 
-    // Sélection initiale et animation de sortie
     function selectInitialLang(lang) {
-        switchLang(lang);
+        currentLang = lang;
+        applyLanguage(lang);
         
         const splash = document.getElementById('splash-screen');
         splash.classList.add('fade-out');
         
-        document.querySelector('.wrapper').classList.add('visible');
+        setTimeout(() => {
+            splash.style.display = 'none';
+            // BOOT SEQUENCE TRIGGER (Effet d'allumage progressif de la machine)
+            document.body.classList.remove('boot-loading');
+            window.ns_setupCallback();
+        }, 600);
     }
 
-    // Injection des données traduites
-    function switchLang(lang) {
-        // Textes statiques du Hero & structure
-        document.getElementById('hero-title').innerHTML = data[lang].heroTitle;
-        document.getElementById('hero-desc').innerText = data[lang].heroDesc;
-        document.querySelector('.lbl-pc-card').innerText = data[lang].cardPc;
-        document.querySelector('.lbl-setup-card').innerText = data[lang].cardSetup;
-        document.querySelector('.lbl-total-card').innerText = data[lang].cardTotal;
-        document.getElementById('footer-text').innerText = data[lang].footer;
+    function applyLanguage(lang) {
+        const l = data[lang];
+        
+        document.getElementById('hero-title').innerHTML = l.heroTitle;
+        document.getElementById('hero-desc').textContent = l.heroDesc;
+        
+        document.querySelector('.lbl-pc-card').textContent = l.cardPc;
+        document.querySelector('.lbl-setup-card').textContent = l.cardSetup;
+        document.querySelector('.lbl-total-card').textContent = l.cardTotal;
+        
+        document.querySelector('.th-comp').textContent = l.thComp;
+        document.querySelector('.th-item').textContent = l.thItem;
+        document.querySelectorAll('.th-src').forEach(el => el.textContent = l.thSrc);
+        document.querySelectorAll('.th-pr').forEach(el => el.textContent = l.thPr);
+        
+        document.getElementById('footer-text').textContent = l.footer;
+        
+        buildTable('table-pc', l.pcItems, l.categories, l.thLabelSrc, l.thLabelPr);
+        buildTable('table-setup', l.setupItems, l.categories, l.thLabelSrc, l.thLabelPr);
+    }
 
-        // Headers Tableaux
-        document.querySelector('.th-comp') ? document.querySelector('.th-comp').innerText = data[lang].thComp : null;
-        document.querySelector('.th-item') ? document.querySelector('.th-item').innerText = data[lang].thItem : null;
-        document.querySelectorAll('.th-src').forEach(el => el.innerText = data[lang].thSrc);
-        document.querySelectorAll('.th-pr').forEach(el => el.innerText = data[lang].thPr);
-
-        // Lignes PC
-        const pcBody = document.querySelector('#table-pc tbody');
-        pcBody.innerHTML = "";
-        let currentCat = "";
-        data[lang].pcItems.forEach(item => {
-            if(item.cat !== currentCat) {
-                currentCat = item.cat;
-                pcBody.innerHTML += `<tr class="category-row"><td colspan="3">${data[lang].categories[currentCat]}</td></tr>`;
-            }
-            pcBody.innerHTML += `
-                <tr>
-                    <td class="item-spec">${item.spec}</td>
-                    <td data-label="${data[lang].thLabelSrc}"><span class="source-tag ${item.excl ? 'excl' : ''}">${item.src}</span></td>
-                    <td class="item-price" data-label="${data[lang].thLabelPr}">${item.price}</td>
-                </tr>`;
+    function buildTable(tableId, items, categories, labelSrc, labelPr) {
+        const tbody = document.getElementById(tableId).querySelector('tbody');
+        tbody.innerHTML = '';
+        
+        const itemsByCat = {};
+        items.forEach(item => {
+            if (!itemsByCat[item.cat]) itemsByCat[item.cat] = [];
+            itemsByCat[item.cat].push(item);
         });
+        
+        for (const catKey in itemsByCat) {
+            const catRow = document.createElement('tr');
+            catRow.className = 'category-row';
+            catRow.innerHTML = `<td colspan="3">${categories[catKey]}</td>`;
+            tbody.appendChild(catRow);
+            
+            itemsByCat[catKey].forEach(item => {
+                const row = document.createElement('tr');
+                
+                const specTd = document.createElement('td');
+                specTd.className = 'item-spec';
+                specTd.textContent = item.spec;
+                
+                const srcTd = document.createElement('td');
+                srcTd.setAttribute('data-label', labelSrc);
+                const spanSrc = document.createElement('span');
+                spanSrc.className = 'source-tag' + (item.excl ? ' excl' : '');
+                spanSrc.textContent = item.src;
+                srcTd.appendChild(spanSrc);
+                
+                const priceTd = document.createElement('td');
+                priceTd.className = 'item-price';
+                priceTd.setAttribute('data-label', labelPr);
+                priceTd.textContent = item.price;
+                
+                row.appendChild(specTd);
+                row.appendChild(srcTd);
+                row.appendChild(priceTd);
+                tbody.appendChild(row);
+            });
+        }
+    }
 
-        // Lignes SETUP
-        const setupBody = document.querySelector('#table-setup tbody');
-        setupBody.innerHTML = "";
-        currentCat = "";
-        data[lang].setupItems.forEach(item => {
-            if(item.cat !== currentCat) {
-                currentCat = item.cat;
-                setupBody.innerHTML += `<tr class="category-row"><td colspan="3">${data[lang].categories[currentCat]}</td></tr>`;
-            }
-            setupBody.innerHTML += `
-                <tr>
-                    <td class="item-spec">${item.spec}</td>
-                    <td data-label="${data[lang].thLabelSrc}"><span class="source-tag ${item.excl ? 'excl' : ''}">${item.src}</span></td>
-                    <td class="item-price" data-label="${data[lang].thLabelPr}">${item.price}</td>
-                </tr>`;
+    // INTERACTION SIDEBAR LOGIQUE
+    const toggleBtn = document.getElementById('toggleSidebar');
+    toggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('sidebar-collapsed');
+        const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+        toggleBtn.innerHTML = isCollapsed 
+            ? `<svg style="width:16px;height:16px;" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>`
+            : `<svg style="width:16px;height:16px;" viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/></svg>`;
+    });
+
+    // COMMAND MENU LOGIQUE (CTRL + K / FILTRE CLAVIER RAPIDE)
+    const cmdMenu = document.getElementById('cmdMenu');
+    const cmdInput = document.getElementById('cmdInput');
+    const cmdResults = document.getElementById('cmdResults');
+    const searchTrigger = document.getElementById('searchTrigger');
+
+    function openCmd() {
+        cmdMenu.classList.add('open');
+        cmdInput.focus();
+        renderResults("");
+    }
+
+    function closeCmd() {
+        cmdMenu.classList.remove('open');
+        cmdInput.value = "";
+    }
+
+    function renderResults(query) {
+        cmdResults.innerHTML = "";
+        const l = data[currentLang];
+        const combinedItems = [...l.pcItems, ...l.setupItems];
+        
+        const filtered = combinedItems.filter(item => 
+            item.spec.toLowerCase().includes(query.toLowerCase())
+        ).slice(0, 5); // Max 5 lignes pour le clean visuel
+
+        if (filtered.length === 0) {
+            cmdResults.innerHTML = `<div style="padding:15px; text-align:center; color:var(--text-muted);">Aucun composant trouvé</div>`;
+            return;
+        }
+
+        filtered.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = `cmd-item ${index === 0 ? 'selected' : ''}`;
+            div.innerHTML = `<span>${item.spec}</span><span style="font-weight:700;color:var(--led-red);">${item.price}</span>`;
+            div.addEventListener('click', () => {
+                // Scroll fluide direct vers la table correspondante
+                const targetTable = l.pcItems.includes(item) ? '#table-pc' : '#table-setup';
+                document.querySelector(targetTable).scrollIntoView({ behavior: 'smooth' });
+                closeCmd();
+            });
+            cmdResults.appendChild(div);
         });
     }
+
+    searchTrigger.addEventListener('click', openCmd);
+    cmdInput.addEventListener('input', (e) => renderResults(e.target.value));
+
+    window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            openCmd();
+        }
+        if (e.key === 'Escape') closeCmd();
+    });
+
+    cmdMenu.addEventListener('click', (e) => {
+        if (e.target === cmdMenu) closeCmd();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        resetSplashTitle();
+    });
 </script>
 </body>
 </html>
